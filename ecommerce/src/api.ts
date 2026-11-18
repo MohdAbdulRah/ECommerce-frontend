@@ -9,3 +9,9 @@ export const getProducts = async () => {
     console.log(response.data);
     return response.data.data
 }
+
+export const getProductById = async (productId : string) => {
+    const response = await axios.get(`${API_URL}/api/products/getById/${productId}`)
+    console.log(response.data)
+    return response.data.data
+}
