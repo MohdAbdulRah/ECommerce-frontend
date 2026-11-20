@@ -1,31 +1,56 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ChangeEvent } from 'react';
 import type { product } from './productsInterfaces';
-import { getProducts } from './api';
+import { getProducts, getProductsByKeyword } from './api';
 import { Link, useNavigate } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Home = () => {
     const [products, setProducts] = useState<product[]>([]);
+    const [allProducts, setAllProducts] = useState<product[]>([]);
     const [loading, setLoading] = useState(true);
+    const [searchKeyWord,setSearchKeyWord] = useState<string>('')
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const fetchProducts = async () => {
+     const fetchProducts = async () => {
             try {
                 const response = await getProducts();
                 setProducts(response);
+                setAllProducts(response);
             } catch (error) {
                 console.error("Failed to fetch products:", error);
             } finally {
                 setLoading(false);
             }
         };
+    useEffect(() => {
+       
 
         fetchProducts();
     }, []);
 
+    useEffect(() => {
+         if(!searchKeyWord.trim()){
+            setProducts(allProducts);
+            return;
+         }
+         let cancelled = false;
+         const timer = setTimeout(async () => {
+             const response = await getProductsByKeyword(searchKeyWord);
+             if(!cancelled) setProducts(response);
+         },500)
+
+         return () =>{
+           cancelled = true;
+          clearTimeout(timer);
+         }
+    },[searchKeyWord])
+    function handleChange(event: ChangeEvent<HTMLInputElement, HTMLInputElement>): void {
+        setSearchKeyWord(event.target.value)
+        console.log(searchKeyWord)
+    }
+
+   
     return (
         <div className="relative min-h-screen overflow-hidden px-6 py-12">
 
@@ -51,7 +76,16 @@ const Home = () => {
                             Explore our latest products and collections.
                         </p>
                     </div>
+                     <div>
 
+                   <input
+  type="text"
+  value={searchKeyWord}
+  onChange={handleChange}
+  placeholder="Search..."
+  className="w-full max-w-md rounded-lg border border-white/10 bg-white px-4 py-2 text-black outline-none"
+/>
+                </div>
                     <button
                         onClick={() => navigate("/add")}
                         className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-7 py-3.5 font-semibold text-white shadow-lg shadow-purple-900/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-purple-500/20 active:translate-y-0"
@@ -208,3 +242,5 @@ const Home = () => {
 };
 
 export default Home;
+
+

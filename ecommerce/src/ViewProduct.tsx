@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ChangeEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getProductById } from './api';
 import type { product } from './productsInterfaces';
@@ -13,6 +13,7 @@ const ViewProduct = () => {
 
     const [product, setProduct] = useState<product | null>(null);
     const [loading, setLoading] = useState(true);
+    
 
     useEffect(() => {
         const fetchProductDetails = async () => {
@@ -38,6 +39,8 @@ const ViewProduct = () => {
         console.log(response.data);
         navigate("/");
     };
+    
+
 
     if (loading) {
         return (
@@ -67,6 +70,9 @@ const ViewProduct = () => {
         );
     }
 
+    
+
+
     return (
         <div className="relative min-h-screen overflow-hidden px-5 py-12 sm:px-8">
 
@@ -90,10 +96,10 @@ const ViewProduct = () => {
                         View product information and manage your inventory.
                     </p>
                 </div>
-
+               
                 {/* Main Card */}
                 <div className="grid grid-cols-1 gap-10 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-5 shadow-2xl shadow-black/30 backdrop-blur-2xl transition-all duration-500 hover:border-purple-500/30 sm:p-8 md:grid-cols-2 md:p-10">
-
+                     
                     {/* Image Section */}
                     <div className="group relative flex min-h-[350px] items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-white/[0.01] p-5">
 
