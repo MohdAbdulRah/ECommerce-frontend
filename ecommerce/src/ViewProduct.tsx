@@ -1,9 +1,10 @@
 
-import { useEffect, useState, type ChangeEvent } from 'react';
+import { useContext, useEffect, useState, type ChangeEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getProductById } from './api';
 import type { product } from './productsInterfaces';
 import axios from 'axios';
+import CartContext from './CartContext';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -13,7 +14,13 @@ const ViewProduct = () => {
 
     const [product, setProduct] = useState<product | null>(null);
     const [loading, setLoading] = useState(true);
-    
+     const context = useContext(CartContext);
+
+    if (!context) {
+        throw new Error("Home must be inside CartProvider");
+    }
+
+    const { cart, setCart } = context; 
 
     useEffect(() => {
         const fetchProductDetails = async () => {
@@ -40,7 +47,24 @@ const ViewProduct = () => {
         navigate("/");
     };
     
+    const handleAddToCard = (prod: product) => {
+    setCart(prev => {
+        const alreadyExists = prev.some(item => item.Id === prod.Id);
 
+        if (alreadyExists) {
+            return prev;
+        }
+
+        return [
+            ...prev,
+            {
+                Id: prod.Id,
+                prod: prod,
+                quantity: 1
+            }
+        ];
+    });
+};
 
     if (loading) {
         return (
@@ -71,7 +95,27 @@ const ViewProduct = () => {
     }
 
     
+const handleIncrease = () => {
+    setCart(prev =>
+        prev.map(item =>
+            item.Id === product.Id
+                ? { ...item, quantity: item.quantity + 1 }
+                : item
+        )
+    );
+};
 
+const handleDecrease = () => {
+    setCart(prev =>
+        prev
+            .map(item =>
+                item.Id === product.Id
+                    ? { ...item, quantity: item.quantity - 1 }
+                    : item
+            )
+            .filter(item => item.quantity > 0)
+    );
+};
 
     return (
         <div className="relative min-h-screen overflow-hidden px-5 py-12 sm:px-8">
@@ -131,6 +175,47 @@ const ViewProduct = () => {
                             <p className="mt-4 leading-7 text-gray-400">
                                 {product.description}
                             </p>
+                             {
+    (() => {
+        const cartItem = cart.find(
+            item => item.Id === product.Id
+        );
+
+        return cartItem ? (
+            <div className="flex items-center gap-4 mt-5">
+
+                <button
+                    onClick={handleDecrease}
+                    className="rounded-lg bg-red-500 px-4 py-2 text-white"
+                >
+                    -
+                </button>
+
+                <span className="text-xl font-bold text-white">
+                    {cartItem.quantity}
+                </span>
+
+                <button
+                    onClick={handleIncrease}
+                    disabled={cartItem.quantity >= product.stockQuantity}
+                    className="rounded-lg bg-purple-600 px-4 py-2 text-white disabled:opacity-40"
+                >
+                    +
+                </button>
+
+            </div>
+        ) : (
+            <button
+                onClick={() => handleAddToCard(product)}
+                disabled={!product.avalaible || product.stockQuantity <= 0}
+                className="mt-5 rounded-xl bg-purple-600 px-6 py-3 font-semibold text-white disabled:opacity-40"
+            >
+                Add to Cart
+            </button>
+        );
+    })()
+}
+                            
                         </div>
 
                         {/* Price */}

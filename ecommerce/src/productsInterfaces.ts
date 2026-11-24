@@ -12,4 +12,9 @@
     updatedAt : string;
 }
 
+export interface cartType{
+    Id : string;
+    prod : product;
+    quantity : number;
+}
 

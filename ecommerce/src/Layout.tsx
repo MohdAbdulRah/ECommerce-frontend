@@ -1,8 +1,10 @@
 
-import React from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
+import React, { useContext } from 'react'
+import { Link, NavLink, Outlet } from 'react-router-dom'
+import CartContext from './CartContext'
 
 const Layout = () => {
+  const {cart,setCart} = useContext(CartContext);
   return (
     <div className="min-h-screen relative overflow-hidden bg-[#080b18] text-white">
 
@@ -54,12 +56,12 @@ const Layout = () => {
           </div>
 
           {/* Cart */}
-          <button className="group flex items-center gap-2 px-5 py-2.5
+          <Link className="group flex items-center gap-2 px-5 py-2.5
             rounded-xl border border-purple-400/30
             bg-gradient-to-r from-purple-500/20 to-blue-500/20
             hover:from-purple-500/40 hover:to-blue-500/40
             backdrop-blur-xl transition-all duration-300
-            hover:scale-105">
+            hover:scale-105" to={"/cart"}>
 
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -82,9 +84,9 @@ const Layout = () => {
 
             <span className="flex items-center justify-center w-5 h-5
               rounded-full bg-purple-500 text-white text-xs">
-              0
+              {cart.length}
             </span>
-          </button>
+          </Link>
 
         </nav>
       </header>

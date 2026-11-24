@@ -6,6 +6,7 @@ import About from './About'
 import Layout from './Layout'
 import ViewProduct from './ViewProduct'
 import AddProduct from './AddProduct'
+import CartPage from './CartPage'
 
 function App() {
  
@@ -19,6 +20,7 @@ function App() {
 
               <Route path='/product/:id' element={<ViewProduct />}/>
               <Route path='/add/:id?' element={<AddProduct />}/>
+              <Route path='/cart' element={<CartPage />}/>
          </Route>
          
        </Routes>
